@@ -1,0 +1,134 @@
+package com.mystudio.gamename;
+
+// import org.mini2Dx.core.*; // exit()
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import org.mini2Dx.core.graphics.*;
+import com.badlogic.gdx.graphics.*;
+import org.mini2Dx.core.game.BasicGame;
+import org.mini2Dx.core.graphics.Graphics;
+import org.mini2Dx.core.engine.geom.CollisionPoint;
+
+public class MyMini2DxGame extends BasicGame {
+	public static final String GAME_IDENTIFIER = "com.mystudio.gamename";
+
+  private Texture texture;
+  private Sprite sprite;
+  private CollisionPoint point;
+
+  float xPos = 0;
+  float yPos = 0;
+  // float xDir = 1;
+  // float yDir = 1;
+  float xDir = 0;
+  float yDir = 0;
+
+  float rot = 0f;
+
+  final float xDirMax = 100;
+  final float yDirMax = 100;
+  final float xDirIncrement = xDirMax/5;
+  final float yDirIncrement = yDirMax/5;
+  final float xDirDecay = 0.1f;
+  final float yDirDecay = 0.1f;
+
+	@Override
+    public void initialise() {
+      texture = new Texture("arrow.png");
+      sprite = new Sprite(texture);
+      point = new CollisionPoint();
+    }
+
+    @Override
+    public void update(final float delta) {
+      // decay
+      if (xDir > 0) {
+        xDir = xDir - xDirDecay;
+        if (xDir < 0)
+          xDir = 0;
+      }
+      if (yDir > 0) {
+        yDir = yDir - yDirDecay;
+        if (yDir < 0)
+          yDir = 0;
+      }
+
+      if (xDir < 0) {
+        xDir = xDir + xDirDecay;
+        if (xDir > 0)
+          xDir = 0;
+      }
+
+      if (yDir < 0) {
+        yDir = yDir + yDirDecay;
+        if (yDir > 0)
+          yDir = 0;
+      }
+
+      // inputs
+
+      if (Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
+        // Gdx.app.exit();
+        System.exit(0);
+      }
+
+      if (Gdx.input.isKeyJustPressed(Keys.UP)) {
+        System.out.println("up");
+        yDir = yDir - yDirIncrement;
+      }
+
+      if (Gdx.input.isKeyJustPressed(Keys.DOWN)) {
+        System.out.println("down");
+        yDir = yDir + yDirIncrement;
+      }
+
+      if (Gdx.input.isKeyJustPressed(Keys.LEFT)) {
+        System.out.println("left");
+        xDir = xDir - xDirIncrement;
+      }
+
+      if (Gdx.input.isKeyJustPressed(Keys.RIGHT)) {
+        System.out.println("right");
+        xDir = xDir + xDirIncrement;
+      }
+
+      point.preUpdate();
+      point.set(point.getX() + xDir, point.getY() + yDir);
+
+      xPos = xPos + xDir;
+      yPos = yPos + yDir;
+
+      if (xPos >= (width-texture.getWidth())) {
+        xDir = -xDir;
+      } else if (xPos <= 0) {
+        xDir = Math.abs(xDir);
+      }
+
+      if (yPos >= (height-texture.getHeight())) {
+        yDir = -yDir;
+      } else if (yPos <= 0) {
+        yDir = Math.abs(yDir);
+      }
+
+      // rot = rot + 0.1f;
+      // if (rot >= 1) {
+      // rot = 0;
+      // }
+      // sprite.rotate(rot);
+    }
+
+    @Override
+    public void interpolate(final float alpha) {
+      // sprite.rotate(1);
+      point.interpolate(null, alpha);
+    }
+
+    @Override
+    public void render(final Graphics g) {
+      // g.drawTexture(texture, xPos, xPos);
+      // g.drawSprite(sprite, xPos, yPos);
+      g.drawSprite(sprite, point.getRenderX(), point.getRenderY());
+    }
+}
