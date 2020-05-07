@@ -13,6 +13,16 @@ import org.mini2Dx.core.graphics.Graphics;
 import org.mini2Dx.core.engine.geom.CollisionPoint;
 import com.badlogic.gdx.*; // InputProcessor
 
+// public class Player {
+//   private CollisionPoint point;
+//   private Sprite sprite;
+
+//   public Player() {
+//     point = new CollisionPoint();
+//     sprite = new Sprite(new Texture(Gdx.files.internal("arrow.png")));
+//   }
+// }
+
 public class MyMini2DxGame extends BasicGame {
 	public static final String GAME_IDENTIFIER = "com.mystudio.gamename";
 
@@ -22,9 +32,6 @@ public class MyMini2DxGame extends BasicGame {
 
   // boolean renderingRequested = false;
   boolean followMouse = false;
-
-  float xPos = 0;
-  float yPos = 0;
 
   float xDir = 0;
   float yDir = 0;
@@ -47,11 +54,6 @@ public class MyMini2DxGame extends BasicGame {
       create any required objects and load any resources needed for your game.
       After the initialise method is finished, the update, interpolate and
       render methods are called continuously until the game ends. */
-
-      xPos = width / 2;
-      yPos = height / 2;
-      prevXPos = xPos;
-      prevYPos = yPos;
 
       // MyInputProcessor inputProcessor = new MyInputProcessor();
       Gdx.input.setInputProcessor(new InputAdapter() {
@@ -101,8 +103,8 @@ public class MyMini2DxGame extends BasicGame {
           if (!followMouse)
             return false;
 
-          double deltaX = x - xPos;
-          double deltaY = y - yPos;
+          double deltaX = x - point.getX();
+          double deltaY = y - point.getY();
           double rad = Math.atan2(deltaY, deltaX); // In radians
 
           double deg = rad * (180 / Math.PI);
@@ -121,8 +123,8 @@ public class MyMini2DxGame extends BasicGame {
             System.out.print(", Y: ");
             System.out.println(y);
 
-            xDir = x - xPos;
-            yDir = y - yPos;
+            xDir = x - point.getX();
+            yDir = y - point.getY();
 
             if (Math.abs(xDir) > xDirMax) {
               float percentDrop = xDirMax / xDir;
@@ -145,9 +147,7 @@ public class MyMini2DxGame extends BasicGame {
             xDir = 0;
             yDir = 0;
 
-            xPos = x;
-            yPos = y;
-            point.set(xPos, yPos);
+            point.set(x, y);
 
             return true;
           }
@@ -161,7 +161,9 @@ public class MyMini2DxGame extends BasicGame {
       sprite = new Sprite(texture);
       point = new CollisionPoint();
 
-      point.set(xPos, yPos);
+      point.set(width / 2, height / 2);
+      prevXPos = point.getX();
+      prevYPos = point.getY();
 
       // Gdx.graphics.setContinuousRendering(false);
       // Gdx.graphics.requestRendering();
@@ -217,29 +219,29 @@ public class MyMini2DxGame extends BasicGame {
       point.preUpdate();
       point.set(point.getX() + xDir, point.getY() + yDir);
 
-      prevXPos = xPos;
-      prevYPos = yPos;
+      prevXPos = point.getX();
+      prevYPos = point.getY();
 
-      xPos = xPos + xDir;
-      yPos = yPos + yDir;
+      point.setX(point.getX() + xDir);
+      point.setY(point.getY() + yDir);
 
-      if (xPos >= (width - texture.getWidth())) {
+      if (point.getX() >= (width - texture.getWidth())) {
         xDir = -xDir;
-      } else if (xPos < 0) {
+      } else if (point.getX() < 0) {
         xDir = Math.abs(xDir);
       }
 
-      if (yPos >= (height - texture.getHeight())) {
+      if (point.getY() >= (height - texture.getHeight())) {
         yDir = -yDir;
-      } else if (yPos < 0) {
+      } else if (point.getY() < 0) {
         yDir = Math.abs(yDir);
       }
 
       if (!followMouse) {
         // rotation
         // https://stackoverflow.com/questions/15994194/how-to-convert-x-y-coordinates-to-an-angle
-        double deltaX = xPos - prevXPos;
-        double deltaY = yPos - prevYPos;
+        double deltaX = point.getX() - prevXPos;
+        double deltaY = point.getY() - prevYPos;
         double rad = Math.atan2(deltaY, deltaX); // In radians
 
         double deg = rad * (180 / Math.PI);
@@ -255,7 +257,7 @@ public class MyMini2DxGame extends BasicGame {
       // g.drawTexture(texture, xPos, xPos);
       // g.drawSprite(sprite, xPos, yPos);
 
-      if ((xPos != prevXPos) || (yPos != prevYPos)) {
+      if ((point.getX() != prevXPos) || (point.getY() != prevYPos)) {
         // renderingRequested = true;
         followMouse = false;
       } else {
