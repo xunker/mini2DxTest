@@ -3,6 +3,7 @@ package com.mystudio.gamename;
 // import org.mini2Dx.core.*; // exit()
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import org.mini2Dx.core.graphics.*;
@@ -114,19 +115,32 @@ public class MyMini2DxGame extends BasicGame {
 
         @Override
         public boolean touchDown(int x, int y, int pointer, int button) {
-          System.out.print("X: ");
-          System.out.print(x);
-          System.out.print(", Y: ");
-          System.out.println(y);
+          if (button == Buttons.LEFT) {
+            System.out.print("X: ");
+            System.out.print(x);
+            System.out.print(", Y: ");
+            System.out.println(y);
 
-          xDir = x - xPos;
-          yDir = y - yPos;
-          System.out.print("xDir: ");
-          System.out.print(xDir);
-          System.out.print(",  yDir: ");
-          System.out.println(yDir);
+            xDir = x - xPos;
+            yDir = y - yPos;
+            System.out.print("xDir: ");
+            System.out.print(xDir);
+            System.out.print(",  yDir: ");
+            System.out.println(yDir);
 
-          return true; // return true to indicate the event was handled
+            return true; // return true to indicate the event was handled
+          } else if (button == Buttons.RIGHT) {
+            xDir = 0;
+            yDir = 0;
+
+            xPos = x;
+            yPos = y;
+            point.set(xPos, yPos);
+
+            return true;
+          }
+
+          return false;
         }
 
       });
