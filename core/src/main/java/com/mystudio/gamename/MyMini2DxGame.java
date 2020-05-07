@@ -159,6 +159,14 @@ public class MyMini2DxGame extends BasicGame {
       /* This is where you'll draw you game to the screen. */
       // g.drawTexture(texture, xPos, xPos);
       // g.drawSprite(sprite, xPos, yPos);
+
+      if ((xPos != prevXPos) || (yPos != prevYPos)) {
+        Gdx.graphics.requestRendering();
+        // System.out.print("R");
+      } else {
+        // System.out.print(".");
+      }
+
       g.drawSprite(sprite, point.getRenderX(), point.getRenderY());
     }
 }
