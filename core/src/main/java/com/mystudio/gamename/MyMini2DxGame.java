@@ -123,6 +123,18 @@ public class MyMini2DxGame extends BasicGame {
 
             xDir = x - xPos;
             yDir = y - yPos;
+
+            if (Math.abs(xDir) > xDirMax) {
+              float percentDrop = xDirMax / xDir;
+              xDir = xDirMax;
+              yDir = yDir * percentDrop;
+            }
+            if (Math.abs(yDir) > yDirMax) {
+              float percentDrop = yDirMax / yDir;
+              yDir = yDirMax;
+              xDir = xDir * percentDrop;
+            }
+
             System.out.print("xDir: ");
             System.out.print(xDir);
             System.out.print(",  yDir: ");
@@ -163,16 +175,6 @@ public class MyMini2DxGame extends BasicGame {
       represents the amount of time in seconds to advance game logic. By default
       delta is 0.1 seconds. */
 
-
-    }
-
-    @Override
-    public void interpolate(final float alpha) {
-      /* This is where your game calculates the render coordinates of your
-      sprites. The variable 'alpha' will be between 0.0 and 1.0, representing
-      how much of an update to simulate, i.e. 0.5 means it is halfway through
-      an update.*/
-
       // decay
       if (xDir > 0) {
         xDir = xDir - xDirDecay;
@@ -196,6 +198,16 @@ public class MyMini2DxGame extends BasicGame {
         if (yDir > 0)
           yDir = 0;
       }
+
+    }
+
+    @Override
+    public void interpolate(final float alpha) {
+      /* This is where your game calculates the render coordinates of your
+      sprites. The variable 'alpha' will be between 0.0 and 1.0, representing
+      how much of an update to simulate, i.e. 0.5 means it is halfway through
+      an update.*/
+
 
       // if (Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
       //   // Gdx.app.exit();
