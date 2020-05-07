@@ -13,22 +13,14 @@ import org.mini2Dx.core.graphics.Graphics;
 import org.mini2Dx.core.engine.geom.CollisionPoint;
 import com.badlogic.gdx.*; // InputProcessor
 
-// public class Player {
-//   private CollisionPoint point;
-//   private Sprite sprite;
-
-//   public Player() {
-//     point = new CollisionPoint();
-//     sprite = new Sprite(new Texture(Gdx.files.internal("arrow.png")));
-//   }
-// }
-
 public class MyMini2DxGame extends BasicGame {
 	public static final String GAME_IDENTIFIER = "com.mystudio.gamename";
 
   private Texture texture;
   private Sprite sprite;
   private CollisionPoint point;
+
+  private Player player;
 
   // boolean renderingRequested = false;
   boolean followMouse = false;
@@ -41,8 +33,8 @@ public class MyMini2DxGame extends BasicGame {
 
   float rot = 0f;
 
-  final float xDirMax = 50;
-  final float yDirMax = 50;
+  final float xDirMax = 25;
+  final float yDirMax = 25;
   final float xDirIncrement = xDirMax/5;
   final float yDirIncrement = yDirMax/5;
   final float xDirDecay = 0.1f;
@@ -103,8 +95,8 @@ public class MyMini2DxGame extends BasicGame {
           if (!followMouse)
             return false;
 
-          double deltaX = x - point.getX();
-          double deltaY = y - point.getY();
+          double deltaX = x - player.getX();
+          double deltaY = y - player.getY();
           double rad = Math.atan2(deltaY, deltaX); // In radians
 
           double deg = rad * (180 / Math.PI);
@@ -123,8 +115,8 @@ public class MyMini2DxGame extends BasicGame {
             System.out.print(", Y: ");
             System.out.println(y);
 
-            xDir = x - point.getX();
-            yDir = y - point.getY();
+            xDir = x - player.getX();
+            yDir = y - player.getY();
 
             if (Math.abs(xDir) > xDirMax) {
               float percentDrop = xDirMax / xDir;
@@ -147,7 +139,7 @@ public class MyMini2DxGame extends BasicGame {
             xDir = 0;
             yDir = 0;
 
-            point.set(x, y);
+            player.setPos(x, y);
 
             return true;
           }
@@ -161,9 +153,11 @@ public class MyMini2DxGame extends BasicGame {
       sprite = new Sprite(texture);
       point = new CollisionPoint();
 
-      point.set(width / 2, height / 2);
-      prevXPos = point.getX();
-      prevYPos = point.getY();
+      player = new Player(sprite, point);
+
+      player.setPos(width / 2, height / 2);
+      prevXPos = player.getX();
+      prevYPos = player.getY();
 
       // Gdx.graphics.setContinuousRendering(false);
       // Gdx.graphics.requestRendering();
@@ -216,39 +210,39 @@ public class MyMini2DxGame extends BasicGame {
       //   System.exit(0);
       // }
 
-      point.preUpdate();
-      point.set(point.getX() + xDir, point.getY() + yDir);
+      player.preUpdate();
+      player.setPos(player.getX() + xDir, player.getY() + yDir);
 
-      prevXPos = point.getX();
-      prevYPos = point.getY();
+      prevXPos = player.getX();
+      prevYPos = player.getY();
 
-      point.setX(point.getX() + xDir);
-      point.setY(point.getY() + yDir);
+      player.setX(player.getX() + xDir);
+      player.setY(player.getY() + yDir);
 
-      if (point.getX() >= (width - texture.getWidth())) {
+      if (player.getX() >= (width - texture.getWidth())) {
         xDir = -xDir;
-      } else if (point.getX() < 0) {
+      } else if (player.getX() < 0) {
         xDir = Math.abs(xDir);
       }
 
-      if (point.getY() >= (height - texture.getHeight())) {
+      if (player.getY() >= (height - texture.getHeight())) {
         yDir = -yDir;
-      } else if (point.getY() < 0) {
+      } else if (player.getY() < 0) {
         yDir = Math.abs(yDir);
       }
 
       if (!followMouse) {
         // rotation
         // https://stackoverflow.com/questions/15994194/how-to-convert-x-y-coordinates-to-an-angle
-        double deltaX = point.getX() - prevXPos;
-        double deltaY = point.getY() - prevYPos;
+        double deltaX = player.getX() - prevXPos;
+        double deltaY = player.getY() - prevYPos;
         double rad = Math.atan2(deltaY, deltaX); // In radians
 
         double deg = rad * (180 / Math.PI);
         sprite.setRotation((float) deg);
       }
 
-      point.interpolate(null, alpha);
+      player.interpolate(null, alpha);
     }
 
     @Override
@@ -257,7 +251,7 @@ public class MyMini2DxGame extends BasicGame {
       // g.drawTexture(texture, xPos, xPos);
       // g.drawSprite(sprite, xPos, yPos);
 
-      if ((point.getX() != prevXPos) || (point.getY() != prevYPos)) {
+      if ((player.getX() != prevXPos) || (player.getY() != prevYPos)) {
         // renderingRequested = true;
         followMouse = false;
       } else {
@@ -271,6 +265,6 @@ public class MyMini2DxGame extends BasicGame {
       //   // System.out.print(".");
       // }
 
-      g.drawSprite(sprite, point.getRenderX(), point.getRenderY());
+      g.drawSprite(sprite, player.getRenderX(), player.getRenderY());
     }
 }
