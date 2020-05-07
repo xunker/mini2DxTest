@@ -8,17 +8,25 @@ public class Player {
   private CollisionPoint point;
   private Sprite sprite;
 
+  float prevXPos = 0;
+  float prevYPos = 0;
+
   public Player(Sprite sprite, CollisionPoint point) {
     this.sprite = sprite;
     this.point = point;
   }
 
-  void preUpdate() {
+  void update() {
     point.preUpdate();
   }
 
   void interpolate(GameContainer gc, float alpha) {
     point.interpolate(gc, alpha);
+  }
+
+  void setPrevPosFromCurrent() {
+    prevXPos = point.getX();
+    prevYPos = point.getY();
   }
 
   void setPos(float x, float y) {

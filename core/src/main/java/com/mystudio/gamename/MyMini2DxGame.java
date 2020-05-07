@@ -28,9 +28,6 @@ public class MyMini2DxGame extends BasicGame {
   float xDir = 0;
   float yDir = 0;
 
-  float prevXPos = 0;
-  float prevYPos = 0;
-
   float rot = 0f;
 
   final float xDirMax = 25;
@@ -156,8 +153,7 @@ public class MyMini2DxGame extends BasicGame {
       player = new Player(sprite, point);
 
       player.setPos(width / 2, height / 2);
-      prevXPos = player.getX();
-      prevYPos = player.getY();
+      player.setPrevPosFromCurrent();
 
       // Gdx.graphics.setContinuousRendering(false);
       // Gdx.graphics.requestRendering();
@@ -210,11 +206,11 @@ public class MyMini2DxGame extends BasicGame {
       //   System.exit(0);
       // }
 
-      player.preUpdate();
+      player.update();
       player.setPos(player.getX() + xDir, player.getY() + yDir);
 
-      prevXPos = player.getX();
-      prevYPos = player.getY();
+      player.prevXPos = player.getX();
+      player.prevYPos = player.getY();
 
       player.setX(player.getX() + xDir);
       player.setY(player.getY() + yDir);
@@ -234,8 +230,8 @@ public class MyMini2DxGame extends BasicGame {
       if (!followMouse) {
         // rotation
         // https://stackoverflow.com/questions/15994194/how-to-convert-x-y-coordinates-to-an-angle
-        double deltaX = player.getX() - prevXPos;
-        double deltaY = player.getY() - prevYPos;
+        double deltaX = player.getX() - player.prevXPos;
+        double deltaY = player.getY() - player.prevYPos;
         double rad = Math.atan2(deltaY, deltaX); // In radians
 
         double deg = rad * (180 / Math.PI);
@@ -251,7 +247,7 @@ public class MyMini2DxGame extends BasicGame {
       // g.drawTexture(texture, xPos, xPos);
       // g.drawSprite(sprite, xPos, yPos);
 
-      if ((player.getX() != prevXPos) || (player.getY() != prevYPos)) {
+      if ((player.getX() != player.prevXPos) || (player.getY() != player.prevYPos)) {
         // renderingRequested = true;
         followMouse = false;
       } else {
