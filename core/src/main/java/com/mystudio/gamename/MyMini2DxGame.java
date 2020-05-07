@@ -107,26 +107,30 @@ public class MyMini2DxGame extends BasicGame {
         @Override
         public boolean touchDown(int x, int y, int pointer, int button) {
           if (button == Buttons.LEFT) {
-            System.out.print("X: ");
-            System.out.print(x);
-            System.out.print(", Y: ");
-            System.out.println(y);
-
             xDir = x - player.getX();
             yDir = y - player.getY();
 
             if (Math.abs(xDir) > xDirMax) {
-              float percentDrop = xDirMax / xDir;
+              float percentDrop = xDirMax / Math.abs(xDir);
               xDir = xDirMax;
               yDir = yDir * percentDrop;
             }
+
             if (Math.abs(yDir) > yDirMax) {
-              float percentDrop = yDirMax / yDir;
+              float percentDrop = yDirMax / Math.abs(yDir);
               yDir = yDirMax;
               xDir = xDir * percentDrop;
             }
 
-            System.out.print("xDir: ");
+            System.out.print("xPos: ");
+            System.out.print(player.getX());
+            System.out.print(", yPos: ");
+            System.out.print(player.getY());
+            System.out.print(", x: ");
+            System.out.print(x);
+            System.out.print(", y: ");
+            System.out.print(y);
+            System.out.print(", xDir: ");
             System.out.print(xDir);
             System.out.print(",  yDir: ");
             System.out.println(yDir);
