@@ -34,8 +34,8 @@ public class MyMini2DxGame extends BasicGame {
 
   float rot = 0f;
 
-  final float xDirMax = 100;
-  final float yDirMax = 100;
+  final float xDirMax = 50;
+  final float yDirMax = 50;
   final float xDirIncrement = xDirMax/5;
   final float yDirIncrement = yDirMax/5;
   final float xDirDecay = 0.1f;
