@@ -10,6 +10,9 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		DesktopMini2DxConfig config = new DesktopMini2DxConfig(MyMini2DxGame.GAME_IDENTIFIER);
 		config.vSyncEnabled = true;
+		config.title = "Basic Game Example";
+		config.width = 800;
+		config.height = 600;
 		new DesktopMini2DxGame(new MyMini2DxGame(), config);
 	}
 }

@@ -25,6 +25,9 @@ public class MyMini2DxGame extends BasicGame {
   float xDir = 0;
   float yDir = 0;
 
+  float prevXPos = 0;
+  float prevYPos = 0;
+
   float rot = 0f;
 
   final float xDirMax = 100;
@@ -36,13 +39,37 @@ public class MyMini2DxGame extends BasicGame {
 
 	@Override
     public void initialise() {
+      /* This is run when the game starts and is only called once. Here you'll
+      create any required objects and load any resources needed for your game.
+      After the initialise method is finished, the update, interpolate and
+      render methods are called continuously until the game ends. */
+
       texture = new Texture("arrow.png");
       sprite = new Sprite(texture);
       point = new CollisionPoint();
+
+      // Gdx.graphics.setContinuousRendering(false);
+      // Gdx.graphics.requestRendering();
+
     }
 
     @Override
     public void update(final float delta) {
+      /* This is where your game will apply game logic, update animations,
+      change background music, etc. The variable called 'delta' is provided and
+      represents the amount of time in seconds to advance game logic. By default
+      delta is 0.1 seconds. */
+
+
+    }
+
+    @Override
+    public void interpolate(final float alpha) {
+      /* This is where your game calculates the render coordinates of your
+      sprites. The variable 'alpha' will be between 0.0 and 1.0, representing
+      how much of an update to simulate, i.e. 0.5 means it is halfway through
+      an update.*/
+
       // decay
       if (xDir > 0) {
         xDir = xDir - xDirDecay;
@@ -97,36 +124,39 @@ public class MyMini2DxGame extends BasicGame {
       point.preUpdate();
       point.set(point.getX() + xDir, point.getY() + yDir);
 
+      prevXPos = xPos;
+      prevYPos = yPos;
+
       xPos = xPos + xDir;
       yPos = yPos + yDir;
 
-      if (xPos >= (width-texture.getWidth())) {
+      if (xPos >= (width - texture.getWidth())) {
         xDir = -xDir;
       } else if (xPos <= 0) {
         xDir = Math.abs(xDir);
       }
 
-      if (yPos >= (height-texture.getHeight())) {
+      if (yPos >= (height - texture.getHeight())) {
         yDir = -yDir;
       } else if (yPos <= 0) {
         yDir = Math.abs(yDir);
       }
 
-      // rot = rot + 0.1f;
-      // if (rot >= 1) {
-      // rot = 0;
-      // }
-      // sprite.rotate(rot);
-    }
+      // rotation
+      // https://stackoverflow.com/questions/15994194/how-to-convert-x-y-coordinates-to-an-angle
+      double deltaX = xPos - prevXPos;
+      double deltaY = yPos - prevYPos;
+      double rad = Math.atan2(deltaY, deltaX); // In radians
 
-    @Override
-    public void interpolate(final float alpha) {
-      // sprite.rotate(1);
+      double deg = rad * (180 / Math.PI);
+      sprite.setRotation((float) deg);
+
       point.interpolate(null, alpha);
     }
 
     @Override
     public void render(final Graphics g) {
+      /* This is where you'll draw you game to the screen. */
       // g.drawTexture(texture, xPos, xPos);
       // g.drawSprite(sprite, xPos, yPos);
       g.drawSprite(sprite, point.getRenderX(), point.getRenderY());
