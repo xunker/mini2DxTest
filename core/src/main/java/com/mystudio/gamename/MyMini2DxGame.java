@@ -47,6 +47,11 @@ public class MyMini2DxGame extends BasicGame {
       After the initialise method is finished, the update, interpolate and
       render methods are called continuously until the game ends. */
 
+      xPos = width / 2;
+      yPos = height / 2;
+      prevXPos = xPos;
+      prevYPos = yPos;
+
       // MyInputProcessor inputProcessor = new MyInputProcessor();
       Gdx.input.setInputProcessor(new InputAdapter() {
         @Override
@@ -60,6 +65,12 @@ public class MyMini2DxGame extends BasicGame {
               System.exit(0);
               // Gdx.app.exit();
               break;
+            case (Keys.SPACE):
+              System.out.println("space");
+              xDir = 0;
+              yDir = 0;
+              break;
+
             case (Keys.UP):
               System.out.println("up");
               yDir = yDir - yDirIncrement;
@@ -107,6 +118,14 @@ public class MyMini2DxGame extends BasicGame {
           System.out.print(x);
           System.out.print(", Y: ");
           System.out.println(y);
+
+          xDir = x - xPos;
+          yDir = y - yPos;
+          System.out.print("xDir: ");
+          System.out.print(xDir);
+          System.out.print(",  yDir: ");
+          System.out.println(yDir);
+
           return true; // return true to indicate the event was handled
         }
 
@@ -115,6 +134,8 @@ public class MyMini2DxGame extends BasicGame {
       texture = new Texture("arrow.png");
       sprite = new Sprite(texture);
       point = new CollisionPoint();
+
+      point.set(xPos, yPos);
 
       // Gdx.graphics.setContinuousRendering(false);
       // Gdx.graphics.requestRendering();
@@ -178,13 +199,13 @@ public class MyMini2DxGame extends BasicGame {
 
       if (xPos >= (width - texture.getWidth())) {
         xDir = -xDir;
-      } else if (xPos <= 0) {
+      } else if (xPos < 0) {
         xDir = Math.abs(xDir);
       }
 
       if (yPos >= (height - texture.getHeight())) {
         yDir = -yDir;
-      } else if (yPos <= 0) {
+      } else if (yPos < 0) {
         yDir = Math.abs(yDir);
       }
 
