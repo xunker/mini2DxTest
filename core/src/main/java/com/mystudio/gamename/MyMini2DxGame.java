@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.*;
 import org.mini2Dx.core.game.BasicGame;
 import org.mini2Dx.core.graphics.Graphics;
 import org.mini2Dx.core.engine.geom.CollisionPoint;
+import com.badlogic.gdx.*; // InputProcessor
 
 public class MyMini2DxGame extends BasicGame {
 	public static final String GAME_IDENTIFIER = "com.mystudio.gamename";
@@ -18,10 +19,12 @@ public class MyMini2DxGame extends BasicGame {
   private Sprite sprite;
   private CollisionPoint point;
 
+  // boolean renderingRequested = false;
+  boolean followMouse = false;
+
   float xPos = 0;
   float yPos = 0;
-  // float xDir = 1;
-  // float yDir = 1;
+
   float xDir = 0;
   float yDir = 0;
 
@@ -43,6 +46,71 @@ public class MyMini2DxGame extends BasicGame {
       create any required objects and load any resources needed for your game.
       After the initialise method is finished, the update, interpolate and
       render methods are called continuously until the game ends. */
+
+      // MyInputProcessor inputProcessor = new MyInputProcessor();
+      Gdx.input.setInputProcessor(new InputAdapter() {
+        @Override
+        public boolean keyDown(int keycode) {
+          System.out.print("keyDown: ");
+          System.out.println(keycode);
+
+          followMouse = false;
+          switch (keycode) {
+            case Keys.ESCAPE:
+              System.exit(0);
+              // Gdx.app.exit();
+              break;
+            case (Keys.UP):
+              System.out.println("up");
+              yDir = yDir - yDirIncrement;
+              break;
+
+            case (Keys.DOWN):
+              System.out.println("down");
+              yDir = yDir + yDirIncrement;
+              break;
+
+            case (Keys.LEFT):
+              System.out.println("left");
+              xDir = xDir - xDirIncrement;
+              break;
+
+            case (Keys.RIGHT):
+              System.out.println("right");
+              xDir = xDir + xDirIncrement;
+              break;
+          }
+
+          return true; // return true to indicate the event was handled
+        }
+
+        @Override
+        public boolean mouseMoved(int x, int y) {
+          if (!followMouse)
+            return false;
+
+          double deltaX = x - xPos;
+          double deltaY = y - yPos;
+          double rad = Math.atan2(deltaY, deltaX); // In radians
+
+          double deg = rad * (180 / Math.PI);
+          sprite.setRotation((float) deg);
+
+          // renderingRequested = true;
+
+          return true; // return true to indicate the event was handled
+        }
+
+        @Override
+        public boolean touchDown(int x, int y, int pointer, int button) {
+          System.out.print("X: ");
+          System.out.print(x);
+          System.out.print(", Y: ");
+          System.out.println(y);
+          return true; // return true to indicate the event was handled
+        }
+
+      });
 
       texture = new Texture("arrow.png");
       sprite = new Sprite(texture);
@@ -94,32 +162,10 @@ public class MyMini2DxGame extends BasicGame {
           yDir = 0;
       }
 
-      // inputs
-
-      if (Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
-        // Gdx.app.exit();
-        System.exit(0);
-      }
-
-      if (Gdx.input.isKeyJustPressed(Keys.UP)) {
-        System.out.println("up");
-        yDir = yDir - yDirIncrement;
-      }
-
-      if (Gdx.input.isKeyJustPressed(Keys.DOWN)) {
-        System.out.println("down");
-        yDir = yDir + yDirIncrement;
-      }
-
-      if (Gdx.input.isKeyJustPressed(Keys.LEFT)) {
-        System.out.println("left");
-        xDir = xDir - xDirIncrement;
-      }
-
-      if (Gdx.input.isKeyJustPressed(Keys.RIGHT)) {
-        System.out.println("right");
-        xDir = xDir + xDirIncrement;
-      }
+      // if (Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
+      //   // Gdx.app.exit();
+      //   System.exit(0);
+      // }
 
       point.preUpdate();
       point.set(point.getX() + xDir, point.getY() + yDir);
@@ -142,14 +188,16 @@ public class MyMini2DxGame extends BasicGame {
         yDir = Math.abs(yDir);
       }
 
-      // rotation
-      // https://stackoverflow.com/questions/15994194/how-to-convert-x-y-coordinates-to-an-angle
-      double deltaX = xPos - prevXPos;
-      double deltaY = yPos - prevYPos;
-      double rad = Math.atan2(deltaY, deltaX); // In radians
+      if (!followMouse) {
+        // rotation
+        // https://stackoverflow.com/questions/15994194/how-to-convert-x-y-coordinates-to-an-angle
+        double deltaX = xPos - prevXPos;
+        double deltaY = yPos - prevYPos;
+        double rad = Math.atan2(deltaY, deltaX); // In radians
 
-      double deg = rad * (180 / Math.PI);
-      sprite.setRotation((float) deg);
+        double deg = rad * (180 / Math.PI);
+        sprite.setRotation((float) deg);
+      }
 
       point.interpolate(null, alpha);
     }
@@ -161,11 +209,18 @@ public class MyMini2DxGame extends BasicGame {
       // g.drawSprite(sprite, xPos, yPos);
 
       if ((xPos != prevXPos) || (yPos != prevYPos)) {
-        Gdx.graphics.requestRendering();
-        // System.out.print("R");
+        // renderingRequested = true;
+        followMouse = false;
       } else {
-        // System.out.print(".");
+        followMouse = true;
       }
+
+      // if (renderingRequested) {
+      //   Gdx.graphics.requestRendering();
+      //   // System.out.print("R");
+      // } else {
+      //   // System.out.print(".");
+      // }
 
       g.drawSprite(sprite, point.getRenderX(), point.getRenderY());
     }
