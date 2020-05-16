@@ -10,8 +10,13 @@ import org.mini2Dx.core.graphics.*;
 import com.badlogic.gdx.graphics.*;
 import org.mini2Dx.core.game.BasicGame;
 import org.mini2Dx.core.graphics.Graphics;
+import org.apache.commons.lang3.ObjectUtils.Null;
 import org.mini2Dx.core.engine.geom.CollisionPoint;
 import com.badlogic.gdx.*; // InputProcessor
+
+import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.FileReader;
 
 public class MyMini2DxGame extends BasicGame {
 	public static final String GAME_IDENTIFIER = "com.mystudio.gamename";
@@ -37,12 +42,49 @@ public class MyMini2DxGame extends BasicGame {
   final float xDirDecay = 0.1f;
   final float yDirDecay = 0.1f;
 
+  private Texture dirtCenter;
+
+  final int mapRows = 8;
+  final int mapColumns = 10;
+  char[][] mapData = new char[mapRows][mapColumns];
+
 	@Override
     public void initialise() {
       /* This is run when the game starts and is only called once. Here you'll
       create any required objects and load any resources needed for your game.
       After the initialise method is finished, the update, interpolate and
       render methods are called continuously until the game ends. */
+
+      /* read map */
+      try {
+        BufferedReader reader = new BufferedReader(new FileReader("../map.txt"));
+
+        String line = "";
+        int lineNumber = 0;
+        while (line != null) {
+          line = reader.readLine();
+          if ((line != null) && (line.length() > 0)) {
+            int colNumber = 0;
+            for (char ch : line.toCharArray()) {
+              System.out.print(lineNumber);
+              System.out.print(" ");
+              System.out.print(colNumber);
+              System.out.print(" ");
+              System.out.println(ch);
+              mapData[lineNumber][colNumber] = ch;
+              colNumber++;
+            }
+          }
+
+          lineNumber++;
+        }
+        reader.close();
+      } catch (IOException ex) {
+        System.out.println(ex.getMessage());
+      }
+
+
+      dirtCenter = Tile.fromFile("Tiles/dirtCenter.png");
 
       // MyInputProcessor inputProcessor = new MyInputProcessor();
       Gdx.input.setInputProcessor(new InputAdapter() {
@@ -265,6 +307,21 @@ public class MyMini2DxGame extends BasicGame {
       //   // System.out.print(".");
       // }
 
+
+
+      // for (int i = 0; i < (width / dirtCenter.getWidth()); i++) {
+      //   for (int j = 0; j < (height / dirtCenter.getHeight()); j++) {
+      //     g.drawTexture(dirtCenter, dirtCenter.getWidth() * j, dirtCenter.getHeight() * j);
+      //   }
+      // }
+      for (int i = 0; i < mapRows; i++) {
+        for (int j = 0; j < mapColumns; j++) {
+          if (mapData[i][j] == '#')
+            g.drawTexture(dirtCenter, dirtCenter.getWidth() * j, dirtCenter.getHeight() * i);
+        }
+      }
+
+      g.drawTexture(dirtCenter, 0, 0);
       g.drawSprite(sprite, player.getRenderX(), player.getRenderY());
     }
 }
