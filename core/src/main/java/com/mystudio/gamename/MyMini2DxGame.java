@@ -14,6 +14,7 @@ import org.apache.commons.lang3.ObjectUtils.Null;
 import org.mini2Dx.core.engine.geom.CollisionPoint;
 import com.badlogic.gdx.*; // InputProcessor
 
+import java.util.HashMap;
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -28,24 +29,13 @@ public class MyMini2DxGame extends BasicGame {
   private Player player;
 
   // boolean renderingRequested = false;
-  boolean followMouse = false;
 
-  float xDir = 0;
-  float yDir = 0;
+  Texture[] textures = new Texture[255];
 
-  float rot = 0f;
-
-  final float xDirMax = 25;
-  final float yDirMax = 25;
-  final float xDirIncrement = xDirMax/5;
-  final float yDirIncrement = yDirMax/5;
-  final float xDirDecay = 0.1f;
-  final float yDirDecay = 0.1f;
-
-  private Texture dirtCenter;
-
-  final int mapRows = 8;
-  final int mapColumns = 10;
+  final int mapRows = 15;
+  final int mapColumns = 28;
+  final int tileWidth = 70;
+  final int tileHeight = 70;
   char[][] mapData = new char[mapRows][mapColumns];
 
 	@Override
@@ -54,6 +44,26 @@ public class MyMini2DxGame extends BasicGame {
       create any required objects and load any resources needed for your game.
       After the initialise method is finished, the update, interpolate and
       render methods are called continuously until the game ends. */
+      width = 100;
+
+      textures[0] = Tile.fromFile("bg.png");
+      // textures[(char)'.'] = Tile.fromFile("Tiles/liquidWater.png"); // empty space
+      // textures[(char)'.'] = Tile.fromFile("Tiles/grassCenter.png");
+      textures[(char)'#'] = Tile.fromFile("Tiles/castleMid.png");
+      textures[(char)'-'] = Tile.fromFile("Tiles/ropeHorizontal.png");
+      textures[(char)'='] = Tile.fromFile("Tiles/ladder_mid.png");
+      textures[(char)'o'] = Tile.fromFile("Tiles/box.png");
+      textures[(char)'p'] = Tile.fromFile("Player/p1_front_resized.png");
+      textures[(char)'e'] = Tile.fromFile("Enemies/pokerMadResized.png");
+
+      texture = textures[(char) 'p'];
+      sprite = new Sprite(texture);
+      point = new CollisionPoint();
+
+      player = new Player(sprite, texture, point);
+
+      player.setPos(width / 2, height / 2);
+      player.setPrevPosFromCurrent();
 
       /* read map */
       try {
@@ -72,6 +82,13 @@ public class MyMini2DxGame extends BasicGame {
               System.out.print(" ");
               System.out.println(ch);
               mapData[lineNumber][colNumber] = ch;
+
+
+              if (ch == 'p') {
+                player.setPos(colNumber * textures[(char)'p'].getWidth(), lineNumber * textures[(char) 'p'].getHeight());
+                player.setPrevPosFromCurrent();
+              }
+
               colNumber++;
             }
           }
@@ -83,9 +100,6 @@ public class MyMini2DxGame extends BasicGame {
         System.out.println(ex.getMessage());
       }
 
-
-      dirtCenter = Tile.fromFile("Tiles/dirtCenter.png");
-
       // MyInputProcessor inputProcessor = new MyInputProcessor();
       Gdx.input.setInputProcessor(new InputAdapter() {
         @Override
@@ -93,113 +107,41 @@ public class MyMini2DxGame extends BasicGame {
           System.out.print("keyDown: ");
           System.out.println(keycode);
 
-          followMouse = false;
           switch (keycode) {
             case Keys.ESCAPE:
               System.exit(0);
               // Gdx.app.exit();
               break;
-            case (Keys.SPACE):
-              System.out.println("space");
-              xDir = 0;
-              yDir = 0;
-              break;
 
             case (Keys.UP):
               System.out.println("up");
-              yDir = yDir - yDirIncrement;
+              if ((player.getY() - tileHeight) >- height)
+                player.moveY(-tileHeight);
               break;
 
             case (Keys.DOWN):
               System.out.println("down");
-              yDir = yDir + yDirIncrement;
+              if ((player.getY() + tileHeight) < height)
+                player.moveY(tileHeight);
               break;
 
             case (Keys.LEFT):
               System.out.println("left");
-              xDir = xDir - xDirIncrement;
+              if ((player.getX() - tileWidth) >= 0)
+                player.moveX(-tileWidth);
               break;
 
             case (Keys.RIGHT):
               System.out.println("right");
-              xDir = xDir + xDirIncrement;
+              if ((player.getX() + tileWidth) < width)
+                player.moveX(tileWidth);
               break;
           }
 
           return true; // return true to indicate the event was handled
         }
-
-        @Override
-        public boolean mouseMoved(int x, int y) {
-          if (!followMouse)
-            return false;
-
-          double deltaX = x - player.getX();
-          double deltaY = y - player.getY();
-          double rad = Math.atan2(deltaY, deltaX); // In radians
-
-          double deg = rad * (180 / Math.PI);
-          sprite.setRotation((float) deg);
-
-          // renderingRequested = true;
-
-          return true; // return true to indicate the event was handled
-        }
-
-        @Override
-        public boolean touchDown(int x, int y, int pointer, int button) {
-          if (button == Buttons.LEFT) {
-            xDir = x - player.getX();
-            yDir = y - player.getY();
-
-            if (Math.abs(xDir) > xDirMax) {
-              float percentDrop = xDirMax / Math.abs(xDir);
-              xDir = xDirMax;
-              yDir = yDir * percentDrop;
-            }
-
-            if (Math.abs(yDir) > yDirMax) {
-              float percentDrop = yDirMax / Math.abs(yDir);
-              yDir = yDirMax;
-              xDir = xDir * percentDrop;
-            }
-
-            System.out.print("xPos: ");
-            System.out.print(player.getX());
-            System.out.print(", yPos: ");
-            System.out.print(player.getY());
-            System.out.print(", x: ");
-            System.out.print(x);
-            System.out.print(", y: ");
-            System.out.print(y);
-            System.out.print(", xDir: ");
-            System.out.print(xDir);
-            System.out.print(",  yDir: ");
-            System.out.println(yDir);
-
-            return true; // return true to indicate the event was handled
-          } else if (button == Buttons.RIGHT) {
-            xDir = 0;
-            yDir = 0;
-
-            player.setPos(x, y);
-
-            return true;
-          }
-
-          return false;
-        }
-
       });
 
-      texture = new Texture("arrow.png");
-      sprite = new Sprite(texture);
-      point = new CollisionPoint();
-
-      player = new Player(sprite, point);
-
-      player.setPos(width / 2, height / 2);
-      player.setPrevPosFromCurrent();
 
       // Gdx.graphics.setContinuousRendering(false);
       // Gdx.graphics.requestRendering();
@@ -213,30 +155,7 @@ public class MyMini2DxGame extends BasicGame {
       represents the amount of time in seconds to advance game logic. By default
       delta is 0.1 seconds. */
 
-      // decay
-      if (xDir > 0) {
-        xDir = xDir - xDirDecay;
-        if (xDir < 0)
-          xDir = 0;
-      }
-      if (yDir > 0) {
-        yDir = yDir - yDirDecay;
-        if (yDir < 0)
-          yDir = 0;
-      }
-
-      if (xDir < 0) {
-        xDir = xDir + xDirDecay;
-        if (xDir > 0)
-          xDir = 0;
-      }
-
-      if (yDir < 0) {
-        yDir = yDir + yDirDecay;
-        if (yDir > 0)
-          yDir = 0;
-      }
-
+      player.update(delta);
     }
 
     @Override
@@ -247,58 +166,12 @@ public class MyMini2DxGame extends BasicGame {
       an update.*/
 
 
-      // if (Gdx.input.isKeyJustPressed(Keys.ESCAPE)) {
-      //   // Gdx.app.exit();
-      //   System.exit(0);
-      // }
-
-      player.update();
-      player.setPos(player.getX() + xDir, player.getY() + yDir);
-
-      player.prevXPos = player.getX();
-      player.prevYPos = player.getY();
-
-      player.setX(player.getX() + xDir);
-      player.setY(player.getY() + yDir);
-
-      if (player.getX() >= (width - texture.getWidth())) {
-        xDir = -xDir;
-      } else if (player.getX() < 0) {
-        xDir = Math.abs(xDir);
-      }
-
-      if (player.getY() >= (height - texture.getHeight())) {
-        yDir = -yDir;
-      } else if (player.getY() < 0) {
-        yDir = Math.abs(yDir);
-      }
-
-      if (!followMouse) {
-        // rotation
-        // https://stackoverflow.com/questions/15994194/how-to-convert-x-y-coordinates-to-an-angle
-        double deltaX = player.getX() - player.prevXPos;
-        double deltaY = player.getY() - player.prevYPos;
-        double rad = Math.atan2(deltaY, deltaX); // In radians
-
-        double deg = rad * (180 / Math.PI);
-        sprite.setRotation((float) deg);
-      }
-
       player.interpolate(null, alpha);
     }
 
     @Override
     public void render(final Graphics g) {
       /* This is where you'll draw you game to the screen. */
-      // g.drawTexture(texture, xPos, xPos);
-      // g.drawSprite(sprite, xPos, yPos);
-
-      if ((player.getX() != player.prevXPos) || (player.getY() != player.prevYPos)) {
-        // renderingRequested = true;
-        followMouse = false;
-      } else {
-        followMouse = true;
-      }
 
       // if (renderingRequested) {
       //   Gdx.graphics.requestRendering();
@@ -308,20 +181,22 @@ public class MyMini2DxGame extends BasicGame {
       // }
 
 
-
-      // for (int i = 0; i < (width / dirtCenter.getWidth()); i++) {
-      //   for (int j = 0; j < (height / dirtCenter.getHeight()); j++) {
-      //     g.drawTexture(dirtCenter, dirtCenter.getWidth() * j, dirtCenter.getHeight() * j);
-      //   }
-      // }
-      for (int i = 0; i < mapRows; i++) {
-        for (int j = 0; j < mapColumns; j++) {
-          if (mapData[i][j] == '#')
-            g.drawTexture(dirtCenter, dirtCenter.getWidth() * j, dirtCenter.getHeight() * i);
+      for (int i = 0; i <= height; i = i + textures[0].getHeight()) {
+        for (int j = 0; j < width; j = j+ textures[0].getWidth()) {
+          g.drawTexture(textures[0], j, i);
         }
       }
 
-      g.drawTexture(dirtCenter, 0, 0);
+      for (int i = 0; i < mapRows; i++) {
+        for (int j = 0; j < mapColumns; j++) {
+          if (mapData[i][j] == 'p')
+            continue;
+          if (textures[(char)mapData[i][j]] != null) {
+            g.drawTexture(textures[(char)mapData[i][j]], textures[(char)mapData[i][j]].getWidth() * j, textures[(char)mapData[i][j]].getHeight() * i);
+          }
+        }
+      }
+
       g.drawSprite(sprite, player.getRenderX(), player.getRenderY());
     }
 }

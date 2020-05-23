@@ -1,22 +1,53 @@
 package com.mystudio.gamename;
 
 import org.mini2Dx.core.graphics.*; //Sprite
+import com.badlogic.gdx.graphics.Texture;
 import org.mini2Dx.core.engine.geom.CollisionPoint;
 import org.mini2Dx.core.game.*; //GameContainer
 
 public class Player {
   private CollisionPoint point;
   private Sprite sprite;
+  public Texture texture;
 
   float prevXPos = 0;
   float prevYPos = 0;
 
-  public Player(Sprite sprite, CollisionPoint point) {
+  int remainingXMovement = 0;
+  int remainingYMovement = 0;
+  int xMovement = 1;
+  int yMovement = 1;
+
+  public Player(Sprite sprite, Texture texture, CollisionPoint point) {
+    this.texture = texture;
     this.sprite = sprite;
     this.point = point;
+
+    xMovement = texture.getWidth() / 10;
+    yMovement = texture.getHeight() / 10;
   }
 
-  void update() {
+  void update(final float delta) {
+    if (remainingXMovement != 0) {
+      if (remainingXMovement > 0) {
+        setX(getX() + xMovement);
+        remainingXMovement -= xMovement;
+      } else if (remainingXMovement < 0) {
+        setX(getX() - xMovement);
+        remainingXMovement += xMovement;
+      }
+    }
+
+    if (remainingYMovement != 0) {
+      if (remainingYMovement > 0) {
+        setY(getY() + yMovement);
+        remainingYMovement -= yMovement;
+      } else if (remainingYMovement < 0) {
+        setY(getY() - yMovement);
+        remainingYMovement += yMovement;
+      }
+    }
+
     point.preUpdate();
   }
 
@@ -47,6 +78,20 @@ public class Player {
 
   float getY() {
     return point.getY();
+  }
+
+  void moveX(int pixels) {
+    if (remainingXMovement != 0)
+      return;
+
+    remainingXMovement += pixels;
+  }
+
+  void moveY(int pixels) {
+    if (remainingYMovement != 0)
+      return;
+
+    remainingYMovement += pixels;
   }
 
   int getRenderX() {
