@@ -46,12 +46,13 @@ public class MyMini2DxGame extends BasicGame {
       render methods are called continuously until the game ends. */
 
       tiles[0] = new Tile("bg.png", ' ', true, false, false);
+      tiles[(char) '.'] = new Tile("Tiles/snowLedgeLeft.png", '.', true, false, false);
       tiles[(char) '#'] = new Tile("Tiles/castleMid.png", '#', false, false, false);
       tiles[(char) '-'] = new Tile("Tiles/ropeHorizontal.png", '-', true, false, true);
       tiles[(char) '='] = new Tile("Tiles/ladder_mid.png", '=', true, true, false);
-      tiles[(char) 'o'] = new Tile("Tiles/box.png", 'o', true, true, false);
-      tiles[(char) 'p'] = new Tile("Player/p1_front_resized.png", 'p', true, true, false);
-      tiles[(char) 'e'] = new Tile("Enemies/pokerMadResized.png", 'e', true, true, false);
+      tiles[(char) 'o'] = new Tile("Tiles/box.png", 'o', true, false, false);
+      tiles[(char) 'p'] = new Tile("Player/p1_front_resized.png", 'p', true, false, false);
+      tiles[(char) 'e'] = new Tile("Enemies/pokerMadResized.png", 'e', false, false, false);
 
       texture = tiles[(char) 'p'].texture;
       sprite = new Sprite(texture);
@@ -117,25 +118,38 @@ public class MyMini2DxGame extends BasicGame {
             case (Keys.UP):
               System.out.println("up");
               if ((player.getY() - tileHeight) >- height)
-                player.moveMapY(-1);
+                if ((mapData[player.mapYPos - 1][player.mapXPos] == null)
+                        || ((mapData[player.mapYPos - 1][player.mapXPos].isPassable) && (mapData[player.mapYPos][player.mapXPos].isClimbable))) {
+                  player.moveMapY(-1);
+                }
               break;
 
             case (Keys.DOWN):
               System.out.println("down");
               if ((player.getY() + tileHeight) < height)
-                player.moveMapY(1);
+                if ((mapData[player.mapYPos + 1][player.mapXPos] == null)
+                    || (mapData[player.mapYPos + 1][player.mapXPos].isPassable)) {
+                  player.moveMapY(1);
+                }
               break;
 
             case (Keys.LEFT):
               System.out.println("left");
               if ((player.getX() - tileWidth) >= 0)
-                player.moveMapX(-1);
+                if ((mapData[player.mapYPos][player.mapXPos - 1] == null)
+                    || (mapData[player.mapYPos][player.mapXPos - 1].isPassable)) {
+                  player.moveMapX(-1);
+                }
               break;
 
             case (Keys.RIGHT):
               System.out.println("right");
-              if ((player.getX() + tileWidth) < width)
-                player.moveMapX(1);
+              if ((player.getX() + tileWidth) < width) {
+                if ((mapData[player.mapYPos][player.mapXPos+1] == null)
+                    || (mapData[player.mapYPos][player.mapXPos+1].isPassable)) {
+                  player.moveMapX(1);
+                }
+              }
               break;
           }
 
