@@ -18,6 +18,9 @@ public class Player {
   int xMovement = 1;
   int yMovement = 1;
 
+  public int mapXPos = 0;
+  public int mapYPos = 0;
+
   public Player(Sprite sprite, Texture texture, CollisionPoint point) {
     this.texture = texture;
     this.sprite = sprite;
@@ -80,18 +83,20 @@ public class Player {
     return point.getY();
   }
 
-  void moveX(int pixels) {
+  void moveMapX(int mapUnits) {
     if (remainingXMovement != 0)
       return;
 
-    remainingXMovement += pixels;
+    mapXPos += mapUnits;
+    remainingXMovement += mapUnits * texture.getWidth();
   }
 
-  void moveY(int pixels) {
+  void moveMapY(int mapUnits) {
     if (remainingYMovement != 0)
       return;
 
-    remainingYMovement += pixels;
+    mapYPos += mapUnits;
+    remainingYMovement += mapUnits * texture.getHeight();;
   }
 
   int getRenderX() {

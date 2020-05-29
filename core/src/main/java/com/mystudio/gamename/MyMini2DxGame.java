@@ -28,9 +28,6 @@ public class MyMini2DxGame extends BasicGame {
 
   private Player player;
 
-  int playerMapXPos = 0;
-  int playerMapYPos = 0;
-
   // boolean renderingRequested = false;
 
   Tile[] tiles = new Tile[255];
@@ -86,8 +83,8 @@ public class MyMini2DxGame extends BasicGame {
 
               if (ch == 'p') {
                 player.setPos(colNumber * tiles[(char) 'p'].texture.getWidth(), lineNumber * tiles[(char) 'p'].texture.getHeight());
-                playerMapXPos = colNumber;
-                playerMapYPos = lineNumber;
+                player.mapXPos = colNumber;
+                player.mapYPos = lineNumber;
                 player.setPrevPosFromCurrent();
               }
 
@@ -118,25 +115,25 @@ public class MyMini2DxGame extends BasicGame {
             case (Keys.UP):
               System.out.println("up");
               if ((player.getY() - tileHeight) >- height)
-                player.moveY(-tileHeight);
+                player.moveMapY(-1);
               break;
 
             case (Keys.DOWN):
               System.out.println("down");
               if ((player.getY() + tileHeight) < height)
-                player.moveY(tileHeight);
+                player.moveMapY(1);
               break;
 
             case (Keys.LEFT):
               System.out.println("left");
               if ((player.getX() - tileWidth) >= 0)
-                player.moveX(-tileWidth);
+                player.moveMapX(-1);
               break;
 
             case (Keys.RIGHT):
               System.out.println("right");
               if ((player.getX() + tileWidth) < width)
-                player.moveX(tileWidth);
+                player.moveMapX(1);
               break;
           }
 
