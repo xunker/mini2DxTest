@@ -177,7 +177,7 @@ public class MyMini2DxGame extends BasicGame {
       if (mapData[player.mapYPos][player.mapXPos] != null) {
         if (!(mapData[player.mapYPos][player.mapXPos].isClimbable || mapData[player.mapYPos][player.mapXPos].isHoldable)) {
           if ((mapData[player.mapYPos + 1][player.mapXPos].isPassable) && ((!mapData[player.mapYPos
-              + 1][player.mapXPos].isClimbable) && (!mapData[player.mapYPos + 1][player.mapXPos].isHoldable))) {
+              + 1][player.mapXPos].isClimbable))) {
             System.out.println("Falling!");
             // we're going to fall!
             player.moveMapY(1);
