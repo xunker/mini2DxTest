@@ -170,6 +170,23 @@ public class MyMini2DxGame extends BasicGame {
       represents the amount of time in seconds to advance game logic. By default
       delta is 0.1 seconds. */
 
+      /* falling: are you currently in a space that does not contain something
+      that isClimable or isHoldable, and does not have a space below which is
+      not isPassable? */
+
+      if (mapData[player.mapYPos][player.mapXPos] != null) {
+        if (!(mapData[player.mapYPos][player.mapXPos].isClimbable || mapData[player.mapYPos][player.mapXPos].isHoldable)) {
+          if ((mapData[player.mapYPos + 1][player.mapXPos].isPassable) && ((!mapData[player.mapYPos
+              + 1][player.mapXPos].isClimbable) && (!mapData[player.mapYPos + 1][player.mapXPos].isHoldable))) {
+            System.out.println("Falling!");
+            // we're going to fall!
+            player.moveMapY(1);
+          } else {
+            // System.out.println(mapData[player.mapYPos + 1][player.mapXPos].character);
+          }
+        }
+      }
+
       player.update(delta);
     }
 
@@ -179,7 +196,6 @@ public class MyMini2DxGame extends BasicGame {
       sprites. The variable 'alpha' will be between 0.0 and 1.0, representing
       how much of an update to simulate, i.e. 0.5 means it is halfway through
       an update.*/
-
 
       player.interpolate(null, alpha);
     }
