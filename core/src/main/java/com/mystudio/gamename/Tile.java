@@ -12,20 +12,23 @@ public class Tile {
     return texture;
   }
 
+  public char character;
   public Texture texture;
   public boolean isPassable;
   public boolean isClimbable;
   public boolean isHoldable;
 
-  public Tile(Texture texture, boolean isPassable, boolean isClimbable, boolean isHoldable) {
+  public Tile(Texture texture, char character, boolean isPassable, boolean isClimbable, boolean isHoldable) {
     this.texture = texture;
+    this.character = character;
     this.isPassable = isPassable;
     this.isClimbable = isClimbable;
     this.isHoldable = isHoldable;
   }
 
-  public Tile(String filename, boolean isPassable, boolean isClimbable, boolean isHoldable) {
+  public Tile(String filename, char character, boolean isPassable, boolean isClimbable, boolean isHoldable) {
     this.texture = new Texture(Gdx.files.internal(pathPrefix + filename));
+    this.character = character;
     this.isPassable = isPassable;
     this.isClimbable = isClimbable;
     this.isHoldable = isHoldable;

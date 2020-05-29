@@ -36,7 +36,7 @@ public class MyMini2DxGame extends BasicGame {
   final int mapColumns = 28;
   final int tileWidth = 70;
   final int tileHeight = 70;
-  char[][] mapData = new char[mapRows][mapColumns];
+  Tile[][] mapData = new Tile[mapRows][mapColumns];
 
 	@Override
     public void initialise() {
@@ -45,13 +45,13 @@ public class MyMini2DxGame extends BasicGame {
       After the initialise method is finished, the update, interpolate and
       render methods are called continuously until the game ends. */
 
-      tiles[0] = new Tile("bg.png", true, false, false);
-      tiles[(char) '#'] = new Tile("Tiles/castleMid.png", false, false, false);
-      tiles[(char) '-'] = new Tile("Tiles/ropeHorizontal.png", true, false, true);
-      tiles[(char) '='] = new Tile("Tiles/ladder_mid.png", true, true, false);
-      tiles[(char) 'o'] = new Tile("Tiles/box.png", true, true, false);
-      tiles[(char) 'p'] = new Tile("Player/p1_front_resized.png", true, true, false);
-      tiles[(char) 'e'] = new Tile("Enemies/pokerMadResized.png", true, true, false);
+      tiles[0] = new Tile("bg.png", ' ', true, false, false);
+      tiles[(char) '#'] = new Tile("Tiles/castleMid.png", '#', false, false, false);
+      tiles[(char) '-'] = new Tile("Tiles/ropeHorizontal.png", '-', true, false, true);
+      tiles[(char) '='] = new Tile("Tiles/ladder_mid.png", '=', true, true, false);
+      tiles[(char) 'o'] = new Tile("Tiles/box.png", 'o', true, true, false);
+      tiles[(char) 'p'] = new Tile("Player/p1_front_resized.png", 'p', true, true, false);
+      tiles[(char) 'e'] = new Tile("Enemies/pokerMadResized.png", 'e', true, true, false);
 
       texture = tiles[(char) 'p'].texture;
       sprite = new Sprite(texture);
@@ -78,7 +78,7 @@ public class MyMini2DxGame extends BasicGame {
               System.out.print(colNumber);
               System.out.print(" ");
               System.out.println(ch);
-              mapData[lineNumber][colNumber] = ch;
+              // mapData[lineNumber][colNumber] = ch;
 
 
               if (ch == 'p') {
@@ -87,6 +87,8 @@ public class MyMini2DxGame extends BasicGame {
                 player.mapYPos = lineNumber;
                 player.setPrevPosFromCurrent();
               }
+
+              mapData[lineNumber][colNumber] = tiles[(char)ch];
 
               colNumber++;
             }
@@ -188,11 +190,13 @@ public class MyMini2DxGame extends BasicGame {
 
       for (int i = 0; i < mapRows; i++) {
         for (int j = 0; j < mapColumns; j++) {
-          if (mapData[i][j] == 'p')
-            continue;
-          if (tiles[(char)mapData[i][j]] != null) {
-            g.drawTexture(tiles[(char)mapData[i][j]].texture, tiles[(char)mapData[i][j]].texture.getWidth() * j, tiles[(char)mapData[i][j]].texture.getHeight() * i);
+          if (mapData[i][j] != null) {
+            if (mapData[i][j].character == 'p')
+              continue;
+
+            g.drawTexture(mapData[i][j].texture, mapData[i][j].texture.getWidth() * j, mapData[i][j].texture.getHeight() * i);
           }
+
         }
       }
 
