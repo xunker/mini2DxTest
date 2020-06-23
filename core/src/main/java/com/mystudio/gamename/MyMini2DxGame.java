@@ -206,8 +206,51 @@ public class MyMini2DxGame extends BasicGame {
       }
 
       player.update(delta);
+
       for (int i = 0; i < enemyCounter; i++) {
-        enemies[i].update(delta);
+        Enemy enemy = enemies[i];
+
+        if (enemy.mapXPos < player.mapXPos) {
+          if ((mapData[enemy.mapYPos][enemy.mapXPos + 1] == null)
+              || (mapData[enemy.mapYPos][enemy.mapXPos + 1].isPassable)) {
+
+            enemy.moveMapX(1);
+          }
+        } else if (enemy.mapXPos > player.mapXPos) {
+          if ((mapData[enemy.mapYPos][enemy.mapXPos - 1] == null)
+                    || (mapData[enemy.mapYPos][enemy.mapXPos - 1].isPassable)) {
+                      enemy.moveMapX(-1);
+                    }
+        }
+
+        if (enemy.mapYPos < player.mapYPos) {
+          if ((mapData[enemy.mapYPos + 1][enemy.mapXPos] == null)
+              || (mapData[enemy.mapYPos + 1][enemy.mapXPos].isPassable)) {
+                  enemy.moveMapY(1);
+              }
+        } else if (enemy.mapYPos > player.mapYPos) {
+          if ((enemy.mapYPos > 0) && ((mapData[enemy.mapYPos - 1][enemy.mapXPos] == null)
+              || ((mapData[enemy.mapYPos - 1][enemy.mapXPos].isPassable)
+                  && (mapData[enemy.mapYPos][enemy.mapXPos].isClimbable)))) {
+            enemy.moveMapY(-1);
+          }
+        }
+
+        if (mapData[enemy.mapYPos][enemy.mapXPos] != null) {
+          if (!(mapData[enemy.mapYPos][enemy.mapXPos].isClimbable
+              || mapData[enemy.mapYPos][enemy.mapXPos].isHoldable)) {
+            if ((mapData[enemy.mapYPos + 1][enemy.mapXPos].isPassable)
+                && ((!mapData[enemy.mapYPos + 1][enemy.mapXPos].isClimbable))) {
+              System.out.println("Enemy Falling!");
+              // we're going to fall!
+              enemy.moveMapY(1);
+            } else {
+              // System.out.println(mapData[enemy.mapYPos + 1][enemy.mapXPos].character);
+            }
+          }
+        }
+
+        enemy.update(delta);
       }
     }
 

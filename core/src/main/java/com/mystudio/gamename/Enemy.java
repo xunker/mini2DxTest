@@ -26,8 +26,8 @@ public class Enemy {
     this.sprite = sprite;
     this.point = point;
 
-    xMovement = texture.getWidth() / 10;
-    yMovement = texture.getHeight() / 10;
+    xMovement = texture.getWidth() / 25;
+    yMovement = texture.getHeight() / 25;
   }
 
   void update(final float delta) {
