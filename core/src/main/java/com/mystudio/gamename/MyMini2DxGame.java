@@ -118,8 +118,12 @@ public class MyMini2DxGame extends BasicGame {
             case (Keys.UP):
               System.out.println("up");
               if ((player.getY() - tileHeight) >- height)
-                if ((mapData[player.mapYPos - 1][player.mapXPos] == null)
-                        || ((mapData[player.mapYPos - 1][player.mapXPos].isPassable) && (mapData[player.mapYPos][player.mapXPos].isClimbable))) {
+                if ((player.mapYPos > 0) && (
+                  (mapData[player.mapYPos - 1][player.mapXPos] == null)
+                  || (
+                    (mapData[player.mapYPos - 1][player.mapXPos].isPassable) && (mapData[player.mapYPos][player.mapXPos].isClimbable)
+                  )
+                )) {
                   player.moveMapY(-1);
                 }
               break;
