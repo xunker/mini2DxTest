@@ -38,6 +38,9 @@ public class MyMini2DxGame extends BasicGame {
   final int tileHeight = 70;
   Tile[][] mapData = new Tile[mapRows][mapColumns];
 
+  Enemy[] enemies = new Enemy[8];
+  int enemyCounter = 0;
+
 	@Override
     public void initialise() {
       /* This is run when the game starts and is only called once. Here you'll
@@ -52,7 +55,7 @@ public class MyMini2DxGame extends BasicGame {
       tiles[(char) '='] = new Tile("Tiles/ladder_mid.png", '=', true, true, false);
       tiles[(char) 'o'] = new Tile("Tiles/box.png", 'o', true, false, false);
       tiles[(char) 'p'] = new Tile("Player/p1_front_resized.png", 'p', true, false, false);
-      tiles[(char) 'e'] = new Tile("Enemies/pokerMadResized.png", 'e', false, false, false);
+      tiles[(char) 'e'] = new Tile("Enemies/pokerMadResized.png", 'e', true, false, false);
 
       texture = tiles[(char) 'p'].texture;
       sprite = new Sprite(texture);
@@ -69,16 +72,17 @@ public class MyMini2DxGame extends BasicGame {
 
         String line = "";
         int lineNumber = 0;
+
         while (line != null) {
           line = reader.readLine();
           if ((line != null) && (line.length() > 0)) {
             int colNumber = 0;
             for (char ch : line.toCharArray()) {
-              System.out.print(lineNumber);
-              System.out.print(" ");
-              System.out.print(colNumber);
-              System.out.print(" ");
-              System.out.println(ch);
+              // System.out.print(lineNumber);
+              // System.out.print(" ");
+              // System.out.print(colNumber);
+              // System.out.print(" ");
+              // System.out.println(ch);
               // mapData[lineNumber][colNumber] = ch;
 
 
@@ -87,6 +91,16 @@ public class MyMini2DxGame extends BasicGame {
                 player.mapXPos = colNumber;
                 player.mapYPos = lineNumber;
                 player.setPrevPosFromCurrent();
+              } else if (ch == 'e') {
+                Enemy enemy = new Enemy(
+                  new Sprite(tiles[(char) 'e'].texture), tiles[(char) 'e'].texture, new CollisionPoint()
+                );
+                enemy.setPos(colNumber * tiles[(char) 'e'].texture.getWidth(), lineNumber * tiles[(char) 'e'].texture.getHeight());
+                enemy.mapXPos = colNumber;
+                enemy.mapYPos = lineNumber;
+                // enemy.setPrevPosFromCurrent();
+                enemies[enemyCounter] = enemy;
+                enemyCounter++;
               }
 
               mapData[lineNumber][colNumber] = tiles[(char)ch];
@@ -192,6 +206,9 @@ public class MyMini2DxGame extends BasicGame {
       }
 
       player.update(delta);
+      for (int i = 0; i < enemyCounter; i++) {
+        enemies[i].update(delta);
+      }
     }
 
     @Override
@@ -202,6 +219,9 @@ public class MyMini2DxGame extends BasicGame {
       an update.*/
 
       player.interpolate(null, alpha);
+      for (int i = 0; i < enemyCounter; i++) {
+        enemies[i].interpolate(null, alpha);
+      }
     }
 
     @Override
@@ -227,11 +247,18 @@ public class MyMini2DxGame extends BasicGame {
           if (mapData[i][j] != null) {
             if (mapData[i][j].character == 'p')
               continue;
+            if (mapData[i][j].character == 'e')
+              continue;
 
             g.drawTexture(mapData[i][j].texture, mapData[i][j].texture.getWidth() * j, mapData[i][j].texture.getHeight() * i);
           }
 
         }
+      }
+
+      // draw enemies
+      for(int i = 0; i < enemyCounter; i++) {
+        g.drawSprite(enemies[i].sprite, enemies[i].getRenderX(), enemies[i].getRenderY());
       }
 
       g.drawSprite(sprite, player.getRenderX(), player.getRenderY());
